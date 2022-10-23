@@ -1,0 +1,17 @@
+{
+    "IGNOR_LABEL": 255,
+    "HEIGHT": 449,
+    "WIGHT": 449,
+    "DATA_PATH": "",
+    "IMAGE_LIST": "",
+    "NUMBER_OF_WORKERS": 0,
+    "PIN_MEMORY": false,
+
+    "EPS": 0.03,
+    "NUMBER_OF_ITERS": 120,
+    "ALPHA": 0.01,
+    
+    "DEVICE": "cuda:0",
+    "MODE": "DUMMY",
+    "MODEL_PATH": ""
+}
