@@ -1,4 +1,4 @@
-import torch.nn
+import torch.nn as nn
 import torch
 
 mean_origin = [0.485, 0.456, 0.406]
@@ -15,6 +15,8 @@ def FGSM(input, target, model, clip_min, clip_max, eps=0.2, device="cpu"):
     criterion = nn.CrossEntropyLoss(ignore_index=ignore_label).to(device)
     loss = criterion(result, target.detach())
     loss.backward()
+
+    print("loss", loss.item())
     res = input_variable.grad
 
     adversarial_example = input.detach().clone()

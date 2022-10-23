@@ -1,24 +1,30 @@
 import torch
 import json
 import sys
+import numpy as np
 
 sys.path.append('../')
 
 from modules.model import load_model, get_model_dummy
 from attacks.bim import BIM
 from dataset.dataset import SemData
+from dataset.meatrics import AverageMeter, intersectionAndUnionGPU
 import dataset.transform as transform
 
 CONFIG_PATH_MAIN = "../configs/config_main.json"
 CONFIG_MAIN = json.load(open(CONFIG_PATH_MAIN ))
 
 if(CONFIG_MAIN["MODE"] == "DUMMY"):
-    model = get_model_dummy(CONFIG_MAIN["DEVICE"])
+    model = get_model_dummy(CONFIG_MAIN["DEVICE"]).eval()
 elif(CONFIG_MAIN["MODE"] == "NORMAL"):
     model = load_model(
         CONFIG_MAIN["MODEL_PATH"], 
         CONFIG_MAIN["DEVICE"]
-    )
+    ).eval()
+
+intersection_meter = AverageMeter()
+union_meter = AverageMeter()
+target_meter = AverageMeter()
 
 value_scale = 255
 mean = [0.485, 0.456, 0.406]
@@ -48,8 +54,10 @@ val_loader = torch.utils.data.DataLoader(
     pin_memory=CONFIG_MAIN['PIN_MEMORY']
 )
 
-for i in range(len(val_loader.__len__())):
-    image, target = val_loader.__getitem__(i)
+for image, target in val_loader:
+    image = image.to(CONFIG_MAIN["DEVICE"])
+    target = target.to(CONFIG_MAIN["DEVICE"])
+
     image = BIM(
         image,
         target,
@@ -59,3 +67,30 @@ for i in range(len(val_loader.__len__())):
         alpha=CONFIG_MAIN["ALPHA"],
         device=CONFIG_MAIN["DEVICE"]
     )
+
+    if(CONFIG_MAIN["MODE"] == "DUMMY"):
+        pred = model(image)
+        pred = pred.max(1)[1]
+    elif(CONFIG_MAIN["MODE"] == "NORMAL"):
+        pred = model(image)
+        pred = pred.max(1)[1]
+
+    intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
+        pred,
+        target,
+        CONFIG_MAIN['CLASSES'],
+        CONFIG_MAIN["IGNOR_LABEL"]
+    )
+    
+    intersection_normal, union_normal, target_normal = intersection_normal.cpu().numpy(), union_normal.cpu().numpy(), target_normal.cpu().numpy()
+    intersection_meter.update(intersection_normal), union_meter.update(union_normal), target_meter.update(target_normal)
+
+iou_class = intersection_meter.sum / (union_meter.sum + 1e-10)
+accuracy_class = intersection_meter.sum / (target_meter.sum + 1e-10)
+mIoU = np.mean(iou_class)
+mAcc = np.mean(accuracy_class)
+allAcc = sum(intersection_meter.sum) / (sum(target_meter.sum) + 1e-10)
+
+print("mIoU", mIoU)
+print("mAcc", mAcc)
+print("allAcc", allAcc)

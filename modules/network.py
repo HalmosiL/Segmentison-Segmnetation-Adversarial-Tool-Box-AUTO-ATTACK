@@ -9,39 +9,12 @@ import copy
 class Dummy(nn.Module):
     def __init__(self):
         super(Dummy, self).__init__()
-        self.lossF = torch.nn.CrossEntropyLoss(ignore_index=255)
+        self.layer0 = torch.nn.Conv2d(in_channels=3, out_channels=19, kernel_size=3, stride=1, padding=1)
 
-        self.layer0 = torch.nn.Conv2d(in_channels=3, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.layer1 = torch.nn.Conv2d(in_channels=2, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.layer2 = torch.nn.Conv2d(in_channels=2, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.layer3 = torch.nn.Conv2d(in_channels=2, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.layer4 = torch.nn.Conv2d(in_channels=2, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.ppm = torch.nn.Conv2d(in_channels=2, out_channels=2, kernel_size=3, stride=1, padding=1)
-        self.cls = torch.nn.Conv2d(in_channels=2, out_channels=19, kernel_size=3, stride=1, padding=1)
-        self.aux = torch.nn.Conv2d(in_channels=2, out_channels=19, kernel_size=3, stride=1, padding=1)
-
-        self.criterion = torch.nn.CrossEntropyLoss(ignore_index=255)
 
     def forward(self, x, y=None):
         x = self.layer0(x)
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-        x_t = self.ppm(x)
-        x = self.cls(x_t)
-        aux = self.aux(x_t)
-
-        if self.training:
-            if(y is not None):
-                main_loss = self.criterion(x, y)
-                aux_loss = self.criterion(aux, y)
-                return x.max(1)[1], main_loss, aux_loss, x
-            else:
-                return x.max(1)[1], x
-            
-        main_loss = self.criterion(x, y)
-        return x.max(1)[1], x, main_loss
+        return x
             
     def getSliceModel(self):
         return self.layer0
