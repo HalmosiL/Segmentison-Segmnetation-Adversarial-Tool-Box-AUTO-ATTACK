@@ -6,6 +6,8 @@ sys.path.append('../')
 
 from modules.model import load_model, get_model_dummy
 from attacks.bim import BIM
+from dataset.dataset import SemData
+import dataset.transform as transform
 
 CONFIG_PATH_MAIN = "../configs/config_main.json"
 CONFIG_MAIN = json.load(open(CONFIG_PATH_MAIN ))
@@ -17,6 +19,12 @@ elif(CONFIG_MAIN["MODE"] == "NORMAL"):
         CONFIG_MAIN["MODEL_PATH"], 
         CONFIG_MAIN["DEVICE"]
     )
+
+value_scale = 255
+mean = [0.485, 0.456, 0.406]
+mean = [item * value_scale for item in mean]
+std = [0.229, 0.224, 0.225]
+std = [item * value_scale for item in std]
 
 val_transform = transform.Compose([
     transform.Crop(
