@@ -1,5 +1,6 @@
 from torch.autograd import Variable
 import torch
+import torch.nn as nn
 
 mean_origin = [0.485, 0.456, 0.406]
 std_origin = [0.229, 0.224, 0.225]
