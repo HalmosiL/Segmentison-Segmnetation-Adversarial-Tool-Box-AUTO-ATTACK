@@ -1,3 +1,42 @@
+from torch.autograd import Variable
+import torch
+
+class Adam_optimizer:
+    def __init__(self, B1, B2, lr):
+        self.B1 = B1
+        self.B2 = B2
+        self.lr = lr
+
+        self.m_t = 0
+        self.v_t = 0
+
+        self.t = 1
+        self.e = 1e-08
+
+    def step_grad(self, grad, image):
+        self.m_t = self.B1 * self.m_t + (1 - self.B1) * grad
+        self.v_t = self.B2 * self.v_t + (1 - self.B2) * (grad ** 2)
+
+        m_l = self.m_t / (1 - self.B1 ** self.t)
+        v_l = self.v_t / (1 - self.B2 ** self.t)
+
+        self.t += 1
+
+        return (self.lr * m_l) / (torch.sqrt(self.v_t) + self.e)
+
+    def step(self, grad, image):
+        self.m_t = self.B1 * self.m_t + (1 - self.B1) * grad
+        self.v_t = self.B2 * self.v_t + (1 - self.B2) * (grad ** 2)
+
+        m_l = self.m_t / (1 - self.B1 ** self.t)
+        v_l = self.v_t / (1 - self.B2 ** self.t)
+
+        self.t += 1
+
+        image = image - (self.lr * m_l) / (torch.sqrt(self.v_t) + self.e)
+
+        return image
+
 def PGD(input, target, model, clip_min, clip_max, optimizer=None, device="cpu"):
     input_variable = input.detach().clone()
     input_variable.requires_grad = True
