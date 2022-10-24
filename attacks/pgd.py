@@ -1,6 +1,9 @@
 from torch.autograd import Variable
 import torch
 
+mean_origin = [0.485, 0.456, 0.406]
+std_origin = [0.229, 0.224, 0.225]
+
 class Adam_optimizer:
     def __init__(self, B1, B2, lr):
         self.B1 = B1
