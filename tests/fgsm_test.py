@@ -54,7 +54,7 @@ val_loader = torch.utils.data.DataLoader(
     pin_memory=CONFIG_MAIN['PIN_MEMORY']
 )
 
-for image, target in val_loader:
+for i, (image, target) in enumerate(val_loader):
     image = image.to(CONFIG_MAIN["DEVICE"])
     target = target.to(CONFIG_MAIN["DEVICE"])
 
