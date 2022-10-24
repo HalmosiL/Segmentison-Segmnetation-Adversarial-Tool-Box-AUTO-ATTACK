@@ -13,6 +13,6 @@
     
     "DEVICE": "cuda:0",
     "MODE": "NORMAL",
-    "MODEL_PATH": "../Adversarial_Combination_499.pt",
+    "MODEL_PATH": "../models/Adversarial_Combination_499.pt",
     "CLASSES":19
 }
