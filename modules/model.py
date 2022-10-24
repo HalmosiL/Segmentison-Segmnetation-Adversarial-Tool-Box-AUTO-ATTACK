@@ -19,7 +19,7 @@ def get_model(device):
         use_ppm=True,
         criterion=nn.CrossEntropyLoss(ignore_index=255),
         BatchNorm=nn.BatchNorm2d,
-        pretrained=True
+        pretrained=False
     )
 
     model = model.to(device)

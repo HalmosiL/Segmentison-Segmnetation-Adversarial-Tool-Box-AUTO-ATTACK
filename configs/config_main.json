@@ -12,7 +12,7 @@
     "ALPHA": 0.01,
     
     "DEVICE": "cuda:0",
-    "MODE": "DUMMY",
+    "MODE": "NORMAL",
     "MODEL_PATH": "",
     "CLASSES":19
 }

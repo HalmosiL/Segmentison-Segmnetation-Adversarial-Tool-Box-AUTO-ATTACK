@@ -9,7 +9,7 @@ def FGSM(input, target, model, clip_min, clip_max, eps=0.2, device="cpu"):
     input_variable.requires_grad = True
 
     model.zero_grad()
-    result = model(input_variable)
+    _, result = model(input_variable)
 
     ignore_label = 255
     criterion = nn.CrossEntropyLoss(ignore_index=ignore_label).to(device)

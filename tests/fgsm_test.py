@@ -85,6 +85,19 @@ for image, target in val_loader:
     intersection_normal, union_normal, target_normal = intersection_normal.cpu().numpy(), union_normal.cpu().numpy(), target_normal.cpu().numpy()
     intersection_meter.update(intersection_normal), union_meter.update(union_normal), target_meter.update(target_normal)
 
+    if(i % 10 == 0):
+        iou_class = intersection_meter.sum / (union_meter.sum + 1e-10)
+        accuracy_class = intersection_meter.sum / (target_meter.sum + 1e-10)
+        mIoU = np.mean(iou_class)
+        mAcc = np.mean(accuracy_class)
+        allAcc = sum(intersection_meter.sum) / (sum(target_meter.sum) + 1e-10)
+
+        print("mIoU", mIoU)
+        print("mAcc", mAcc)
+        print("allAcc", allAcc)
+
+print("-------------------------------Final------------------------------------")
+
 iou_class = intersection_meter.sum / (union_meter.sum + 1e-10)
 accuracy_class = intersection_meter.sum / (target_meter.sum + 1e-10)
 mIoU = np.mean(iou_class)
