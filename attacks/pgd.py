@@ -45,11 +45,6 @@ def PGD(input, target, model, clip_min, clip_max, optimizer=None, device="cpu"):
     input_variable.requires_grad = True
     model.zero_grad()
     result = model(input_variable)
-    if args.zoom_factor != 8:
-        h = int((target.size()[1] - 1) / 8 * args.zoom_factor + 1)
-        w = int((target.size()[2] - 1) / 8 * args.zoom_factor + 1)
-        # 'nearest' mode doesn't support align_corners mode and 'bilinear' mode is fine for downsampling
-        target = F.interpolate(target.unsqueeze(1).float(), size=(h, w), mode='bilinear', align_corners=True).squeeze(1).long()
 
     ignore_label = 255
     criterion = nn.CrossEntropyLoss(ignore_index=ignore_label).to(device)
