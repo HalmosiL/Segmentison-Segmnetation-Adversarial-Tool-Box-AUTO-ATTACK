@@ -8,7 +8,7 @@
     "PIN_MEMORY": false,
 
     "EPS": 0.03,
-    "NUMBER_OF_ITERS": 5,
+    "NUMBER_OF_ITERS": 120,
     "ALPHA": 0.01,
     
     "DEVICE": "cuda:0",
