@@ -54,46 +54,47 @@ val_loader = torch.utils.data.DataLoader(
     pin_memory=CONFIG_MAIN['PIN_MEMORY']
 )
 
-for i, (image, target) in enumerate(val_loader):
-    image = image.to(CONFIG_MAIN["DEVICE"])
-    target = target.to(CONFIG_MAIN["DEVICE"])
+while(True):
+    for i, (image, target) in enumerate(val_loader):
+        image = image.to(CONFIG_MAIN["DEVICE"])
+        target = target.to(CONFIG_MAIN["DEVICE"])
 
-    image = BIM(
-        image,
-        target,
-        model,
-        eps=CONFIG_MAIN["EPS"],
-        k_number=CONFIG_MAIN["NUMBER_OF_ITERS"],
-        alpha=CONFIG_MAIN["ALPHA"],
-        device=CONFIG_MAIN["DEVICE"]
-    )
+        image = BIM(
+            image,
+            target,
+            model,
+            eps=CONFIG_MAIN["EPS"],
+            k_number=CONFIG_MAIN["NUMBER_OF_ITERS"],
+            alpha=CONFIG_MAIN["ALPHA"],
+            device=CONFIG_MAIN["DEVICE"]
+        )
 
-    if(CONFIG_MAIN["MODE"] == "DUMMY"):
-        pred = model(image)
-        pred = pred.max(1)[1]
-    elif(CONFIG_MAIN["MODE"] == "NORMAL"):
-        pred, _ = model(image)
+        if(CONFIG_MAIN["MODE"] == "DUMMY"):
+            pred = model(image)
+            pred = pred.max(1)[1]
+        elif(CONFIG_MAIN["MODE"] == "NORMAL"):
+            pred, _ = model(image)
 
-    intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
-        pred,
-        target,
-        CONFIG_MAIN['CLASSES'],
-        CONFIG_MAIN["IGNOR_LABEL"]
-    )
-    
-    intersection_normal, union_normal, target_normal = intersection_normal.cpu().numpy(), union_normal.cpu().numpy(), target_normal.cpu().numpy()
-    intersection_meter.update(intersection_normal), union_meter.update(union_normal), target_meter.update(target_normal)
+        intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
+            pred,
+            target,
+            CONFIG_MAIN['CLASSES'],
+            CONFIG_MAIN["IGNOR_LABEL"]
+        )
 
-    if(i % 10 == 0):
-        iou_class = intersection_meter.sum / (union_meter.sum + 1e-10)
-        accuracy_class = intersection_meter.sum / (target_meter.sum + 1e-10)
-        mIoU = np.mean(iou_class)
-        mAcc = np.mean(accuracy_class)
-        allAcc = sum(intersection_meter.sum) / (sum(target_meter.sum) + 1e-10)
+        intersection_normal, union_normal, target_normal = intersection_normal.cpu().numpy(), union_normal.cpu().numpy(), target_normal.cpu().numpy()
+        intersection_meter.update(intersection_normal), union_meter.update(union_normal), target_meter.update(target_normal)
 
-        print("mIoU", mIoU)
-        print("mAcc", mAcc)
-        print("allAcc", allAcc)
+        if(i % 10 == 0):
+            iou_class = intersection_meter.sum / (union_meter.sum + 1e-10)
+            accuracy_class = intersection_meter.sum / (target_meter.sum + 1e-10)
+            mIoU = np.mean(iou_class)
+            mAcc = np.mean(accuracy_class)
+            allAcc = sum(intersection_meter.sum) / (sum(target_meter.sum) + 1e-10)
+
+            print("mIoU", mIoU)
+            print("mAcc", mAcc)
+            print("allAcc", allAcc)
 
 print("-------------------------------Final------------------------------------")
 
