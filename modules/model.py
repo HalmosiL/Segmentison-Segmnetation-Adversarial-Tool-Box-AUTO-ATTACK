@@ -35,7 +35,7 @@ def load_model(path, device):
         use_ppm=True,
         criterion=nn.CrossEntropyLoss(ignore_index=255),
         BatchNorm=nn.BatchNorm2d,
-        pretrained=True
+        pretrained=False
     )
 
     model.load_state_dict(torch.load(path, map_location=device))
