@@ -2,7 +2,7 @@
     "IGNOR_LABEL": 255,
     "HEIGHT": 449,
     "WIGHT": 449,
-    "DATA_PATH": "../../CitySpace/Data/ok/",
+    "DATA_PATH": "../../city-scapes-dataset/",
     "IMAGE_LIST": "../lists/dummy.txt",
     "NUMBER_OF_WORKERS": 0,
     "PIN_MEMORY": false,
@@ -13,6 +13,6 @@
     
     "DEVICE": "cuda:0",
     "MODE": "NORMAL",
-    "MODEL_PATH": "",
+    "MODEL_PATH": "../Adversarial_Combination_499.pt",
     "CLASSES":19
 }
