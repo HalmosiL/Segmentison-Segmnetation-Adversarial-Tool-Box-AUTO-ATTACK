@@ -72,8 +72,7 @@ for image, target in val_loader:
         pred = model(image)
         pred = pred.max(1)[1]
     elif(CONFIG_MAIN["MODE"] == "NORMAL"):
-        pred = model(image)
-        pred = pred.max(1)[1]
+        pred, _ = model(image)
 
     intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
         pred,
