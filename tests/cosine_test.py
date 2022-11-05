@@ -8,7 +8,7 @@ import os
 sys.path.append('../')
 
 from modules.model import load_model, get_model_dummy
-from attacks.pgd import BIM
+from attacks.cosine import model_immer_attack_auto_loss, Cosine_PDG_Adam
 from dataset.dataset import SemDataSplit
 import dataset.transform as transform
 
@@ -16,17 +16,20 @@ CONFIG_PATH_MAIN = "../configs/config_main.json"
 CONFIG_MAIN = json.load(open(CONFIG_PATH_MAIN ))
 
 try:
-    os.mkdir(CONFIG_MAIN['SAVE_FOLDER'] + "pgd")
+    print(CONFIG_MAIN['SAVE_FOLDER'] + "cosine/")
+    os.mkdir(CONFIG_MAIN['SAVE_FOLDER'] + "cosine/")
 except OSError as error:
     print("Folder is alredy exist...")
 
 if(CONFIG_MAIN["MODE"] == "DUMMY"):
     model = get_model_dummy(CONFIG_MAIN["DEVICE"]).eval()
+    model_slice = model.getSliceModel().eval()
 elif(CONFIG_MAIN["MODE"] == "NORMAL"):
     model = load_model(
         CONFIG_MAIN["MODEL_PATH"], 
         CONFIG_MAIN["DEVICE"]
     ).eval()
+    model_slice = model.getSliceModel().eval()
 
 value_scale = 255
 mean = [0.485, 0.456, 0.406]
@@ -51,6 +54,11 @@ val_loader = torch.utils.data.DataLoader(
     pin_memory=CONFIG_MAIN['PIN_MEMORY']
 )
 
+attack = Cosine_PDG_Adam(
+    step_size=0.005,
+    clip_size=CONFIG_MAIN['EPS']
+)
+
 for e, (images, labels, label) in enumerate(val_loader):
     predictions = []
 
@@ -58,14 +66,12 @@ for e, (images, labels, label) in enumerate(val_loader):
         image = images[i].to(CONFIG_MAIN["DEVICE"])
         target = labels[i].to(CONFIG_MAIN["DEVICE"])
 
-        image = BIM(
+        image = model_immer_attack_auto_loss(
             image,
-            target,
-            model,
-            eps=CONFIG_MAIN["EPS"],
-            k_number=CONFIG_MAIN["NUMBER_OF_ITERS"],
-            alpha=CONFIG_MAIN["ALPHA"],
-            device=CONFIG_MAIN["DEVICE"]
+            model_slice,
+            attack,
+            CONFIG_MAIN["NUMBER_OF_ITERS"],
+            CONFIG_MAIN["DEVICE"]
         )
 
         if(CONFIG_MAIN["MODE"] == "DUMMY"):
@@ -85,5 +91,5 @@ for e, (images, labels, label) in enumerate(val_loader):
             pred_sum_mask[x*449:(x+1)*449, y*449:(y+1)*449] = predictions[i]
             i += 1
 
-    torch.save(pred_sum_mask, CONFIG_MAIN['SAVE_FOLDER'] + "pgd/prediction_" + str(e) + ".pth")
-    torch.save(label[0], CONFIG_MAIN['SAVE_FOLDER'] + "pgd/label_" + str(e) + ".pth")
+    torch.save(pred_sum_mask, CONFIG_MAIN['SAVE_FOLDER'] + "cosine/prediction_" + str(e) + ".pth")
+    torch.save(label[0], CONFIG_MAIN['SAVE_FOLDER'] + "cosine/label_" + str(e) + ".pth")

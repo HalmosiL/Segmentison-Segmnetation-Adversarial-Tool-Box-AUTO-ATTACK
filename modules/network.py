@@ -14,7 +14,11 @@ class Dummy(nn.Module):
 
     def forward(self, x, y=None):
         x = self.layer0(x)
-        return x
+        return x, x
+
+    def forward_inner_and_full(self, x, y=None):
+        x = self.layer0(x)
+        return x, x, x
             
     def getSliceModel(self):
         return self.layer0
