@@ -4,6 +4,7 @@
     "WIGHT": 449,
     "DATA_PATH": "../../city-scapes-dataset/",
     "IMAGE_LIST": "../lists/original_val.txt",
+    "SAVE_FOLDER": "../experiment/",
     "NUMBER_OF_WORKERS": 0,
     "PIN_MEMORY": false,
 
