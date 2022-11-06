@@ -26,6 +26,9 @@ def test(path):
         m = torch.load(masks[i])
         l = torch.load(labels[i])
 
+        print(m)
+        print(l)
+
         intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
             m,
             l,
