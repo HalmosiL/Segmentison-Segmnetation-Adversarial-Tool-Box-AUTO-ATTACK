@@ -22,7 +22,7 @@ def test(path):
     union_meter = AverageMeter()
     target_meter = AverageMeter()
 
-    for i in range(len(masks)):
+    for i in range(len(labels)):
         m = torch.load(masks[i])
         l = torch.load(labels[i])
 
