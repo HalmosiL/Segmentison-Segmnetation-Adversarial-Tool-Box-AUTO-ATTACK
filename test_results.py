@@ -14,7 +14,10 @@ def test(path):
 
     masks = glob.glob(path + "prediction_*.pth")
     labels = glob.glob(path + "label_*.pth")
-
+    
+    masks.sort()
+    labels.sort()
+    
     print("Number of masks:", len(masks))
     print("Number of labels:", len(labels))
 
@@ -26,9 +29,8 @@ def test(path):
         m = torch.load(masks[i])
         l = torch.load(labels[i])
 
-        print(m)
-        print(l)
-
+        m[l == 255] = 255
+        
         intersection_normal, union_normal, target_normal = intersectionAndUnionGPU(
             m,
             l,
