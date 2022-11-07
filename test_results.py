@@ -26,6 +26,7 @@ def test(path):
     target_meter = AverageMeter()
 
     for i in range(len(labels)):
+        print("Finished:", i/len(labels) * 100, "%", end='\r')
         m = torch.load(masks[i])
         l = torch.load(labels[i])
 
