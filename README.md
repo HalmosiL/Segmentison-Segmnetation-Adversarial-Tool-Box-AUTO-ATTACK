@@ -28,3 +28,7 @@ To install Cityscapes dataset we recomend you to use this repository:
 https://github.com/mcordts/cityscapesScripts.git
 
 ## Testing
+
+```
+run_all_test.py
+```
