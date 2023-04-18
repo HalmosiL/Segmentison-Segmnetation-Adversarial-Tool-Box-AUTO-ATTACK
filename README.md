@@ -30,5 +30,5 @@ https://github.com/mcordts/cityscapesScripts.git
 ## Testing
 
 ```
-run_all_test.py
+python run_all_test.py
 ```
